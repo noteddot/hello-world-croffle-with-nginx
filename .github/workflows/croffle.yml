@@ -38,7 +38,6 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         id: pnpm-install
-        working-directory: .croffle/test
         with:
           version: 7
           run_install: false
@@ -52,7 +51,6 @@ jobs:
 
       - uses: actions/cache@v3
         name: Setup pnpm cache
-        working-directory: .croffle/test
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
