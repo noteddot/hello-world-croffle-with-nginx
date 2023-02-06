@@ -56,13 +56,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Run tests
+      - name: Install Playwright
         working-directory: .croffle/test
         run: |
           pnpm install --frozen-lockfile
           pnpm dlx playwright install
           pnpm dlx playwright install-deps
-          pnpm dlx playwright test
+
+      - name: Run test
+        working-directory: .croffle/test
+        run: pnpm dlx playwright test
 
       - name: Upload result
         uses: actions/upload-artifact@v3
