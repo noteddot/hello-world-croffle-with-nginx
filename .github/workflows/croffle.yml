@@ -32,5 +32,19 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: test-image:latest
-          options: -v ${{ github.workspace }}/sites-available/:/etc/nginx/sites-available/ -v ${{ github.workspace }}/nginx.conf:/etc/nginx/nginx.conf
-          run: echo "hello world"
+          options: --rm -v ${{ github.workspace }}/sites-available/:/etc/nginx/sites-available/ -v ${{ github.workspace }}/nginx.conf:/etc/nginx/nginx.conf
+          run: service nginx start
+
+      - name: Run tests
+        working-directory: .croffle/test
+        run: |
+          npm ci
+          npx playwright install
+          npx playwright install-deps
+          npx playwright test
+
+      - name: Upload result
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.sha }}
+          path: .croffle/test/playwright-report/results.json
