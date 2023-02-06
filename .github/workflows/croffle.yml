@@ -26,6 +26,7 @@ jobs:
           context: .devcontainer/
           tags: test-image:latest
           push: false
+          load: true
 
       - name: Docker Run
         uses: addnab/docker-run-action@v3
