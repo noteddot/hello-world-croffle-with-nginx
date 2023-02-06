@@ -35,9 +35,11 @@ jobs:
           options: --rm -v ${{ github.workspace }}/sites-available/:/etc/nginx/sites-available/ -v ${{ github.workspace }}/nginx.conf:/etc/nginx/nginx.conf -p 3000
           run: |
             echo ${{ github.workspace }}
-            ls /etc/nginx
+            ls /etc/nginx/sites-available
+            cat /etc/nginx/nginx.conf
             nginx -t
             service nginx start
+            docker ps
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
