@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-// test('has title', async ({ page }) => {
-//   await page.goto('http://localhost:3000/');
+test('has title', async ({ page }) => {
+  await page.goto('http://localhost:80/');
 
-//   // Expect a title "to contain" a substring.
-//   await expect(page).toHaveTitle(/Hello World Croffle with Nginx/);
-// });
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Hello World Croffle with Nginx/);
+});
 
 test('get started link', async ({ page }) => {
   await page.goto('https://playwright.dev/');
