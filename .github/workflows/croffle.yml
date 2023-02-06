@@ -51,37 +51,25 @@ jobs:
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
-        name: Setup pnpm cache
+        id: playwright-cache
         with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('./.croffle/test/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/.croffle/test/pnpm-lock.yaml') }}
 
-      - name: Install Playwright
+      - name: Install @playwright/test
         working-directory: .croffle/test
         run: pnpm install --frozen-lockfile
 
-      - name: Store Playwright's Version
+      - name: Install browsers
         working-directory: .croffle/test
-        run: |
-          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
-          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+        run: pnpm dlx playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
 
-      - name: Cache Playwright Browsers for Playwright's Version
-        id: cache-playwright-browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
-
-      - name: Setup Playwright
-        # if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+      - name: Install system dependencies
         working-directory: .croffle/test
-        run: |
-          pnpm dlx playwright install --with-deps
-          pnpm dlx playwright install-deps
+        run: pnpm dlx playwright install-deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
 
       - name: Run test
         working-directory: .croffle/test
