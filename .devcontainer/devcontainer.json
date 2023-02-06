@@ -1,0 +1,22 @@
+{
+  "name": "hello-world-croffle-with-nginx",
+  "dockerFile": "Dockerfile",
+
+  "mounts": [
+    "source=${localWorkspaceFolder}/sites-available/,target=/etc/nginx/sites-available/,type=bind",
+    "source=${localWorkspaceFolder}/nginx.conf,target=/etc/nginx/nginx.conf,type=bind"
+  ],
+
+  "forwardPorts": [3000],
+
+  // Use 'portsAttributes' to set default properties for specific forwarded ports.
+  // More info: https://containers.dev/implementors/json_reference/#port-attributes
+  "portsAttributes": {
+    "3000": {
+      "label": "Running nginx",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postStartCommand": "service nginx start"
+}
