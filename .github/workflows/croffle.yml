@@ -33,7 +33,7 @@ jobs:
         with:
           image: test-image:latest
           options: --rm -v ${{ github.workspace }}/sites-available/:/etc/nginx/sites-available/ -v ${{ github.workspace }}/nginx.conf:/etc/nginx/nginx.conf -p 3000
-          run: service nginx start
+          run: nginx -t && service nginx start
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -58,8 +58,24 @@ jobs:
 
       - name: Install Playwright
         working-directory: .croffle/test
+        run: pnpm install --frozen-lockfile
+
+      - name: Store Playwright's Version
         run: |
-          pnpm install --frozen-lockfile
+          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Setup Playwright
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: |
           pnpm dlx playwright install
           pnpm dlx playwright install-deps
 
