@@ -38,6 +38,9 @@ jobs:
             service nginx start
             service nginx status
 
+      - name: docker ps
+        run: docker ps -a
+
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         id: pnpm-install
