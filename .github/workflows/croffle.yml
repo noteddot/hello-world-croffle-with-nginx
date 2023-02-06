@@ -38,10 +38,10 @@ jobs:
       - name: Run tests
         working-directory: .croffle/test
         run: |
-          npm ci
-          npx playwright install
-          npx playwright install-deps
-          npx playwright test
+          pnpm install --frozen-lockfile
+          pnpm dlx playwright install
+          pnpm dlx playwright install-deps
+          pnpm dlx playwright test
 
       - name: Upload result
         uses: actions/upload-artifact@v3
